@@ -1,0 +1,9 @@
+<?php
+
+declare( strict_types = 1 );
+
+namespace Ocolin\Billmax\Exceptions;
+
+use Exception;
+
+class CacheException extends Exception {}
