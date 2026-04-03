@@ -27,6 +27,7 @@
     - [Condition Functions](#condition-functions)
     - [Operator Functions](#operator-functions)
 - [Getting your API key](#Getting-your-API-key)
+- [Uploading](#Uploading)
 
 ## What is it?
 
