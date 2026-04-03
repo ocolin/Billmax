@@ -165,4 +165,29 @@ class Billmax
             autoGet: $autoGet
         );
     }
+
+
+/* UPLOAD
+----------------------------------------------------------------------------- */
+
+    /**
+     * @param string $entity Entity type for file (Account, Ticket, etc).
+     * @param int $entityId Entity ID (account number, ticket number, etc).
+     * @param array<int, array{path: string, fileClass: int|string, description: string}> $filePaths
+     *  List of files in format [ path, fileClass, description.
+     * @return Response Client HTTP response object.
+     * @throws ApiException|AuthException|CacheException|GuzzleException
+     */
+    public function upload(
+        string $entity,
+           int $entityId,
+         array $filePaths
+    ) : Response
+    {
+        return $this->http->upload(
+               entity: $entity,
+             entityId: $entityId,
+            filePaths: $filePaths
+        );
+    }
 }

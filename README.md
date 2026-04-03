@@ -47,7 +47,6 @@ composer require ocolin/billmax
 ## Todo
 
 - Add OAuth2 support
-- Add file upload support
 - Add more integration testing
 
 ## Configuration
@@ -271,3 +270,41 @@ The api ksy is part of your billmax remove application and was generated when yo
 - Click on the number next to your **billmaxCoreApi** app
 - Copy the value from the **Session Id** field
 - Click **Generate Session Id** if you want to create a new key.
+
+## Uploading
+
+Because uploading files works much different from the rest of endpoints, a specific function as been created to handle file uploading.
+
+### Upload arguments
+
+| Argument  | type    | description                                                             |
+|-----------|---------|-------------------------------------------------------------------------|
+| entity    | string  | Entity to attach file. Ex: account, ticket, message, service, etc.      |
+| entityId  | integer | The ID of entity to attach to. Ex: account 1, ticket 3, service 1, etc. |
+| filePaths | array   | An array of file arrays. See table below for file path values.          |
+
+### File Path Properties
+
+Each file takes an array of values:
+
+| Property Name | Type   | Descrition                                      |
+|---------------|--------|-------------------------------------------------|
+| path          | string | Path to and including the file to upload.       |
+| class         | string | Billmax file class to use. Default is 'support' |
+| description   | string | A description of the file for display purposes  |
+
+### Example
+
+```php
+$output = $billmax->upload(
+    entity: 'account',
+    entityId: 1
+    files: [
+        [
+            'path'        => __DIR__ '/file.txt',
+            'class'       => 'support',
+            'description' => 'My special file'
+        ]
+    ]
+);
+```

@@ -4,6 +4,7 @@ declare( strict_types = 1 );
 
 namespace Ocolin\Billmax;
 
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Ocolin\Billmax\Auth\AuthInterface;
 use Ocolin\Billmax\Auth\AuthNone;
@@ -86,14 +87,15 @@ class HTTP
 ----------------------------------------------------------------------------- */
 
     /**
+     * Make an API request.
+     *
      * @param string $path HTTP URI path.
      * @param string $method HTTP method.
      * @param array<string, string|int|float|bool> $query HTTP query parameters.
      * @param array<string, mixed>|object $body HTTP POST parameters.
      * @param bool $autoGet Automatically get generation for PATCH method.
      * @return Response API client response object.
-     * @throws ApiException|AuthException|CacheException
-     * @throws GuzzleException
+     * @throws ApiException|AuthException|CacheException|GuzzleException
      */
     public function request(
               string $path,
@@ -147,6 +149,8 @@ class HTTP
 ----------------------------------------------------------------------------- */
 
     /**
+     * Fetch the generation date/time from an object.
+     *
      * @param string $path URI path on API server.
      * @param array<string, string|int|float|bool> $query HTTP query parameters.
      * @return string Object generation value.
@@ -170,6 +174,8 @@ class HTTP
 ----------------------------------------------------------------------------- */
 
     /**
+     * Send HTTP Request to Billmax.
+     *
      * @param string $path HTTP URI path.
      * @param string $method HTTP method.
      * @param array<string, string|int|float|bool> $query HTTP query parameters.
@@ -199,6 +205,69 @@ class HTTP
                     'headers' => $this->auth->getHeaders(),
                 ]
             )
+        ));
+    }
+
+
+
+/* UPLOAD
+----------------------------------------------------------------------------- */
+
+    /**
+     * Upload files to Billmax.
+     *
+     * @param string $entity Entity type for file (Account, Ticket, etc).
+     * @param int $entityId Entity ID (account number, ticket number, etc).
+     * @param array<int, array{path: string, fileClass: string, description: string}> $filePaths
+     *  List of files in format [ path, fileClass, description.
+     * @return Response Client HTTP response object/
+     * @throws ApiException|AuthException|CacheException|GuzzleException
+     */
+    public function upload(
+        string $entity,
+           int $entityId,
+         array $filePaths
+    ) : Response
+    {
+        $multi = [
+            [ 'name' => 'entity',   'contents' => $entity ],
+            [ 'name' => 'entityId', 'contents' => $entityId ],
+        ];
+        $count = 0;
+        foreach( $filePaths as $filePath )
+        {
+            if( !empty($filePath['path']) AND !empty($filePath['description']) ) {
+
+                $resource = fopen( filename: $filePath['path'], mode: 'r' );
+                if( $resource === false ) {
+                    throw new ApiException( message: "Cannot open file: {$filePath['path']}" );
+                }
+                $class = empty( $filePath['class']) ? 'support' : $filePath['class'];
+
+                $multi[] = [ 'name' => 'fileClass'   . $count, 'contents' => $class ];
+                $multi[] = [ 'name' => 'description' . $count, 'contents' => $filePath['description'] ];
+                $multi[] = [
+                    'name'     => 'files',
+                    'contents' => $resource,
+                    'filename' => basename( $filePath['path'] ),
+                ];
+
+                $count++;
+            }
+        }
+
+        return self::buildResponse( response: $this->client->request(
+             method: 'POST',
+                uri: 'files',
+            options:
+             array_merge(
+                 [ 'verify' => false, 'timeout' => 20 ],
+                 $this->config->options,
+                 [
+                     'multipart' => $multi,
+                     'headers'   => $this->auth->getHeaders(),
+                ]
+             )
         ));
     }
 
