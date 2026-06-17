@@ -45,6 +45,21 @@ readonly class Config
     public ?string $clientSecret;
 
     /**
+     * @var ?string Application client ID from Billmax.
+     */
+    public ?string $appId;
+
+    /**
+     * @var ?string Optional identifier for remote device using API.
+     */
+    public ?string $deviceId;
+
+    /**
+     * @var ?string Optional version value for API device.
+     */
+    public ?string $appVersion;
+
+    /**
      * @var array<string, string|int|float|bool> List of Guzzle options.
      */
     public array $options;
@@ -72,13 +87,20 @@ readonly class Config
         ?string $password     = null,
         ?string $clientId     = null,
         ?string $clientSecret = null,
+        ?string $appId        = null,
+        ?string $deviceId     = null,
+        ?string $appVersion   = null,
           array $options      = []
     ) {
-        $this->host     = $host     ?? ENV::getStringNull( name: 'BILLMAX_API_HOST' );
-        $this->auth     = $auth     ?? ENV::getStringNull( name: 'BILLMAX_API_AUTH' );
-        $this->apiKey   = $apiKey   ?? ENV::getStringNull( name: 'BILLMAX_API_KEY' );
-        $this->username = $username ?? ENV::getStringNull( name: 'BILLMAX_API_USERNAME' );
-        $this->password = $password ?? ENV::getStringNull( name: 'BILLMAX_API_PASSWORD' );
+        $this->host       = $host       ?? ENV::getStringNull( name: 'BILLMAX_API_HOST' );
+        $this->auth       = $auth       ?? ENV::getStringNull( name: 'BILLMAX_API_AUTH' );
+        $this->apiKey     = $apiKey     ?? ENV::getStringNull( name: 'BILLMAX_API_KEY' );
+        $this->username   = $username   ?? ENV::getStringNull( name: 'BILLMAX_API_USERNAME' );
+        $this->password   = $password   ?? ENV::getStringNull( name: 'BILLMAX_API_PASSWORD' );
+        $this->appId      = $appId      ?? ENV::getStringNull( name: 'BILLMAX_API_APP_ID' ) ?? 'billmax-techapp';
+        $this->deviceId   = $deviceId   ?? ENV::getStringNull( name: 'BILLMAX_API_DEVICE_ID' );
+        $this->appVersion = $appVersion ?? ENV::getStringNull( name: 'BILLMAX_API_APP_VERSION' );
+
         $this->options = $options;
 
         $this->clientId = $clientId ?? ENV::getStringNull(

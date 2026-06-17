@@ -65,9 +65,12 @@ class HTTP
                 string: (string)$this->config->host, characters: '/'
             ) . '/',
             'http_errors' => false,
-            'headers'     => [
-                'Accept'  => 'application/json; charset=utf-8',
-            ],
+            'headers'     => array_filter([
+                'Accept'        => 'application/json; charset=utf-8',
+                'X-App-Id'      => $this->config->appId,
+                'X-Device-Id'   => $this->config->deviceId,
+                'X-App-Version' => $this->config->appVersion,
+            ]),
         ]);
 
         $this->auth = match( $this->config->auth )
@@ -218,7 +221,7 @@ class HTTP
      *
      * @param string $entity Entity type for file (Account, Ticket, etc).
      * @param int $entityId Entity ID (account number, ticket number, etc).
-     * @param array<int, array{path: string, fileClass: string, description: string}> $filePaths
+     * @param array<int, array{path: string, class: string, description: string}> $filePaths
      *  List of files in format [ path, fileClass, description.
      * @return Response Client HTTP response object/
      * @throws ApiException|AuthException|CacheException|GuzzleException

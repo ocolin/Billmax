@@ -173,7 +173,7 @@ class Billmax
     /**
      * @param string $entity Entity type for file (Account, Ticket, etc).
      * @param int $entityId Entity ID (account number, ticket number, etc).
-     * @param array<int, array{path: string, fileClass: int|string, description: string}> $filePaths
+     * @param array<int, array{path: string, class: string, description: string}> $filePaths
      *  List of files in format [ path, fileClass, description.
      * @return Response Client HTTP response object.
      * @throws ApiException|AuthException|CacheException|GuzzleException

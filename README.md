@@ -65,6 +65,9 @@ The client can be configured by either environment variables, constructor argume
 |BILLMAX_API_PASSWORD|$password| Password for USERPASS mode     |
 |BILLMAX_API_OAUTH2_CLIENT_ID|$clientId| Client ID for OAuth2 mode      |
 |BILLMAX_API_OAUTH2_CLIENT_SECRET|$clientSecret| Client secret for OAuth2 mode  |
+|BILLMAX_API_APP_ID|$appId| App ID found in Billmax|
+|BILLMAX_API_DEVICE_ID|$deviceId| Optional Device ID|
+|BILLMAX_API_APP_VERSION|$appVersion| Optional app version|
 
 ### Authentication mode.
 
@@ -83,6 +86,7 @@ $_ENV['BILLMAX_API_KEY']      = 'GETTHISFROMSESSIONIDINREMOTEAPP';
 $_ENV['BILLMAX_API_AUTH']     = 'USERPASS';
 $_ENV['BILLMAX_API_USERNAME'] = 'staffmember';
 $_ENV['BILLMAX_API_PASSWORD'] = 'staffmemberpassword';
+$_ENV['BILLMAX_API_APP_ID']   = 'billmax-techapp';
 
 $billmax = new Ocolin\BillMax\Billmax();
 ```
@@ -97,7 +101,8 @@ $config = new Ocolin\Billmax\Config(
       apiKey: 'GETTHISFROMSESSIONIDINREMOTEAPP',
         auth: 'USERPASS',
     username: 'staffmember',
-    password: 'staffmemberpassword'
+    password: 'staffmemberpassword',
+       appId: 'billmax-techapp'
 );
 
 $billmax = new \Ocolin\Billmax\Billmax( $config: $config );

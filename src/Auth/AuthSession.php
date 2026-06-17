@@ -59,9 +59,12 @@ abstract class AuthSession implements AuthInterface
                 ['verify' => false, 'timeout' => 30],
                 $this->config->options ?? [],
                 [
-                    'headers' => [
-                        'api_key' => (string) $this->config->apiKey,
-                    ],
+                    'headers' => array_filter([
+                        'api_key'       => (string)$this->config->apiKey,
+                        'X-App-Id'      => $this->config->appId,
+                        'X-Device-Id'   => $this->config->deviceId,
+                        'X-App-Version' => $this->config->appVersion,
+                    ]),
                     'json'    => [
                         'username' => $identifier,
                         'password' => $this->config->password
