@@ -43,7 +43,14 @@ class AuthUserPass extends AuthSession
     public function getHeaders() : array
     {
         $token = $this->tokenManager->get();
+
         if( $token === null ) {
+            if( $this->config->username === null OR $this->config->password === null ) {
+                throw new AuthException(
+                    message: "AUTH USERPASS: No token available and no credentials provided for re-authentication."
+                );
+            }
+
             $token = $this->login( identifier: (string)$this->config->username );
             $this->tokenManager->set( token: $token );
         }

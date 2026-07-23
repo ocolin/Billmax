@@ -4,7 +4,12 @@ declare( strict_types = 1 );
 
 namespace Ocolin\Billmax\Tests\Unit;
 
+use AllowDynamicProperties;
+use GuzzleHttp\ClientInterface;
+use Ocolin\Billmax\Auth\AuthUserPass;
+use Ocolin\Billmax\Auth\TokenInterface;
 use Ocolin\Billmax\Config;
+use Ocolin\Billmax\Exceptions\AuthException;
 use Ocolin\Billmax\Exceptions\ConfigException;
 use PHPUnit\Framework\TestCase;
 
@@ -14,6 +19,8 @@ class ConfigTest extends TestCase
      * @var array<string, string|null>
      */
     private array $backup = [];
+
+    private ClientInterface $mockClient;
 
 
 /*
@@ -97,36 +104,29 @@ class ConfigTest extends TestCase
 /*
 ----------------------------------------------------------------------------- */
 
-    public function testUserPassMissingUsername(): void
+    public function testGetHeadersThrowsWhenNoTokenAndNoCredentials(): void
     {
-        $this->expectException( ConfigException::class );
-        $this->expectExceptionMessage( "AUTH USERPASS: Missing Auth username." );
-
-        new Config(
-            host:     'https://billmax.example.com:3100',
-            auth:     'USERPASS',
-            apiKey:   'abc123',
-            password: 'secret'
+        $config = new Config(
+            host:   'https://billmax.example.com:3100',
+            auth:   'USERPASS',
+            apiKey: 'abc123'
         );
-    }
 
+        $this->mockClient = $this->createStub( ClientInterface::class );
+        $mockCache = $this->createStub( TokenInterface::class );
+        $mockCache->method( 'get' )->willReturn( null );
 
-/*
------------------------------------------------------------------------------ */
+        $this->expectException( AuthException::class );
+        $this->expectExceptionMessage( 'AUTH USERPASS: No token available and no credentials provided for re-authentication.' );
 
-    public function testUserPassMissingPassword(): void
-    {
-        $this->expectException( ConfigException::class );
-        $this->expectExceptionMessage( "AUTH USERPASS: Missing Auth password." );
-
-        new Config(
-            host:     'https://billmax.example.com:3100',
-            auth:     'USERPASS',
-            apiKey:   'abc123',
-            username: 'john'
+        $auth = new AuthUserPass(
+            config: $config,
+            cache:  $mockCache,
+            client: $this->mockClient
         );
-    }
 
+        $auth->getHeaders();
+    }
 
 /*
 ----------------------------------------------------------------------------- */
