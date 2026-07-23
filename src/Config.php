@@ -190,15 +190,9 @@ readonly class Config
      */
     private function validateUserPass() : void
     {
-        if( $this->username === null ) {
+        if( $this->apiKey === null ) {
             throw new ConfigException(
-                message: "AUTH USERPASS: Missing Auth username."
-            );
-        }
-
-        if( $this->password === null ) {
-            throw new ConfigException(
-                message: "AUTH USERPASS: Missing Auth password."
+                message: "AUTH USERPASS: Missing API Key."
             );
         }
     }
