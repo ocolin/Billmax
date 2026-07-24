@@ -52,25 +52,33 @@ abstract class AuthSession implements AuthInterface
         $host = rtrim( string: (string)$this->config->host, characters: '/' )
             . '/login';
 
-        $response = $this->client->request(
-             method: 'POST',
+        try {
+            $response = $this->client->request(
+                method: 'POST',
                 uri: $host,
-            options: array_merge(
-                ['verify' => false, 'timeout' => 30],
-                $this->config->options ?? [],
-                [
-                    'headers' => array_filter([
-                        'api_key'       => (string)$this->config->apiKey,
-                        'X-App-Id'      => $this->config->appId,
-                        'X-Device-Id'   => $this->config->deviceId,
-                        'X-App-Version' => $this->config->appVersion,
-                    ]),
-                    'json'    => [
-                        'username' => $identifier,
-                        'password' => $this->config->password
-                ]]
-            )
-        );
+                options: array_merge(
+                    ['verify' => false, 'timeout' => 30],
+                    $this->config->options ?? [],
+                    [
+                        'headers' => array_filter([
+                            'api_key' => (string)$this->config->apiKey,
+                            'X-App-Id' => $this->config->appId,
+                            'X-Device-Id' => $this->config->deviceId,
+                            'X-App-Version' => $this->config->appVersion,
+                        ]),
+                        'json' => [
+                            'username' => $identifier,
+                            'password' => $this->config->password
+                        ]
+                    ]
+                )
+            );
+        }
+        catch( GuzzleException $e ) {
+            throw new AuthException(
+                message: "AUTH: Login request failed. " . $e->getMessage()
+            );
+        }
 
         $status = $response->getStatusCode();
         $body = json_decode( $response->getBody()->getContents());
