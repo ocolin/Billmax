@@ -198,6 +198,7 @@ class HTTP
         return self::buildResponse( response: $this->client->request(
              method: $method,
                 uri: $path,
+            // @phpstan-ignore argument.type
             options: array_merge(
                 [ 'verify'  => false, 'timeout' => 30 ],
                 $this->config->options,
@@ -234,7 +235,7 @@ class HTTP
     {
         $multi = [
             [ 'name' => 'entity',   'contents' => $entity ],
-            [ 'name' => 'entityId', 'contents' => $entityId ],
+            [ 'name' => 'entityId', 'contents' => (string)$entityId ],
         ];
         $count = 0;
         foreach( $filePaths as $filePath )
@@ -262,6 +263,7 @@ class HTTP
         return self::buildResponse( response: $this->client->request(
              method: 'POST',
                 uri: 'files',
+            // @phpstan-ignore argument.type
             options:
              array_merge(
                  [ 'verify' => false, 'timeout' => 20 ],

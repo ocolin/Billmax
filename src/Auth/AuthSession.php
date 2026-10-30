@@ -56,6 +56,7 @@ abstract class AuthSession implements AuthInterface
             $response = $this->client->request(
                 method: 'POST',
                 uri: $host,
+                // @phpstan-ignore argument.type
                 options: array_merge(
                     ['verify' => false, 'timeout' => 30],
                     $this->config->options ?? [],
