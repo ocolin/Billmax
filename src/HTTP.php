@@ -4,6 +4,7 @@ declare( strict_types = 1 );
 
 namespace Ocolin\Billmax;
 
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use Ocolin\Billmax\Auth\AuthInterface;
 use Ocolin\Billmax\Auth\AuthNone;
@@ -13,6 +14,7 @@ use Ocolin\Billmax\Exceptions\ApiException;
 use Ocolin\Billmax\Exceptions\AuthException;
 use Ocolin\Billmax\Exceptions\CacheException;
 use Ocolin\Billmax\Auth\TokenInterface;
+use Ocolin\Billmax\Exceptions\ConnectionException;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Client as GuzzleClient;
@@ -240,9 +242,15 @@ class HTTP
                 )
             );
         }
+        catch ( ConnectException $e ) {
+            throw new ConnectionException(
+                message: "API: {$method} {$path} failed - " . $e->getMessage(),
+                previous: $e
+            );
+        }
         catch( GuzzleException $e ) {
             throw new ApiException(
-                 message: $e->getMessage() . " API: {$method} {$path} failed.",
+                 message: "API: {$method} {$path} failed - " . $e->getMessage(),
                 previous: $e
             );
         }
@@ -312,6 +320,12 @@ class HTTP
                     ],
                     ['http_errors' => false]
                 )
+            );
+        }
+        catch ( ConnectException $e ) {
+            throw new ConnectionException(
+                message: $e->getMessage() . " API: POST {$entityId} failed.",
+                previous: $e
             );
         }
         catch( GuzzleException $e ) {

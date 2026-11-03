@@ -6,10 +6,14 @@ namespace Ocolin\Billmax\Auth;
 
 use GuzzleHttp\Client AS GuzzleClient;
 use GuzzleHttp\ClientInterface as GuzzleClientInterface;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use Ocolin\Billmax\Config;
+use Ocolin\Billmax\Exceptions\ApiException;
 use Ocolin\Billmax\Exceptions\AuthException;
 use Ocolin\Billmax\Exceptions\CacheException;
+use Ocolin\Billmax\Exceptions\ConnectionException;
 
 abstract class AuthSession implements AuthInterface
 {
@@ -44,7 +48,9 @@ abstract class AuthSession implements AuthInterface
     /**
      * @param string $identifier Which identifier to use for login username.
      * @return string Session ID token.
-     * @throws AuthException
+     * @throws AuthException Login failure.
+     * @throws ConnectionException Connection failure
+     * @throws ApiException
      */
     public function login( string $identifier ) : string
     {
@@ -74,9 +80,30 @@ abstract class AuthSession implements AuthInterface
                 )
             );
         }
+        catch( ConnectException $e ) {
+            throw new ConnectionException(
+                message: "API: Connection failed. - " . $e->getMessage(),
+                previous: $e
+            );
+        }
+        catch( ClientException $e ) {
+            $status = $e->getResponse()->getStatusCode();
+            if( $status === 400 || $status === 401 ) {
+                throw new AuthException(
+                    message: "AUTH: Login request failed - " . $e->getMessage(),
+                    previous: $e,
+                );
+            }
+            else {
+                throw new ApiException(
+                    message: "API: Login failed - " . $e->getMessage(),
+                    previous: $e,
+                );
+            }
+        }
         catch( GuzzleException $e ) {
-            throw new AuthException(
-                message: "AUTH: Login request failed. " . $e->getMessage(),
+            throw new ApiException(
+                message: "API: Login failed - " . $e->getMessage(),
                 previous: $e,
             );
         }

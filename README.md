@@ -37,7 +37,7 @@ This is a small lightweight PHP client for using the REST API service of Billmax
 ## Requirements
 
 - PHP ^8.3
-- guzzlehttp/guzzle ^7.10
+- guzzlehttp/guzzle ^7.15.2 || ^8.0.1
 - ocolin/global-type ^2.0
 
 ## Installation
@@ -336,13 +336,13 @@ The one exception is `401`. If the server rejects the session, the client re-aut
 
 Everything the client throws at runtime extends one base class, so a single `catch` covers all of it.
 
-| Exception | Thrown when |
-|-----------|-------------|
-| `BillmaxException` | Abstract base class. Catch this to handle everything below. |
-| `ConfigException` | Settings are missing or invalid when creating the client. |
-| `AuthException` | A login is rejected or fails, or a request is still unauthorized after re-authenticating. |
-| `ApiException` | The request never got an answer (connection refused, timeout, DNS failure), the response was not valid JSON, an invalid HTTP method was used, or a PATCH could not find a `generation` value. |
-| `CacheException` | The token cache could not be read or written. |
+| Exception | Thrown when                                                                                                                                                                               |
+|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `BillmaxException` | Abstract base class. Catch this to handle everything below.                                                                                                                               |
+| `ConfigException` | The request may not have reached the server (connection refused, DNS failure, timeout). Extends `ApiException`, so existing `catch (ApiException)` code still works.                      |
+| `AuthException` | A login is rejected or fails, or a request is still unauthorized after re-authenticating. Triggers on a 400, 401 during authentication.                                                   |
+| `ApiException` | The server answered but the response was unusable (not valid JSON), or a request was invalid (bad HTTP method, a PATCH with no `generation` value), or another transfer failure occurred. |
+| `CacheException` | The token cache could not be read or written.                                                                                                                                             |
 
 All exceptions live in the `Ocolin\Billmax\Exceptions` namespace.
 
@@ -357,14 +357,20 @@ catch( BillmaxException $e ) {
 }
 ```
 
-You can also catch a specific class when you want to handle one case differently:
+### Telling an outage from a rejection
+
+An unreachable server throws `ConnectionException`. A refused login throws `AuthException`. Catch the specific class first:
 
 ```php
 use Ocolin\Billmax\Exceptions\AuthException;
 use Ocolin\Billmax\Exceptions\BillmaxException;
+use Ocolin\Billmax\Exceptions\ConnectionException;
 
 try {
     $response = $billmax->get( endpoint: '/accounts' );
+}
+catch( ConnectionException $e ) {
+    // could not reach the server
 }
 catch( AuthException $e ) {
     // credentials rejected, send the user back to log in
@@ -374,4 +380,6 @@ catch( BillmaxException $e ) {
 }
 ```
 
-###
+`ConnectionException` means the request **may not** have reached the server. A timeout after the request was sent can still have been processed, so only retry operations that are safe to repeat (GET, DELETE). Be careful retrying a POST, which could create a duplicate.
+
+The original Guzzle exception is available through `getPrevious()`.
