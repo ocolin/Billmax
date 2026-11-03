@@ -28,6 +28,7 @@
     - [Operator Functions](#operator-functions)
 - [Getting your API key](#Getting-your-API-key)
 - [Uploading](#Uploading)
+- [Error handling](#Error-handling)
 
 ## What is it?
 
@@ -314,3 +315,63 @@ $output = $billmax->upload(
     ]
 );
 ```
+
+## Error handling
+
+### HTTP error statuses are returned, not thrown
+
+A `4xx` or `5xx` response from the server is not an exception. It comes back as a normal `Response` object, so you decide what counts as a success for your use case. A `404` after a delete might be exactly what you wanted.
+
+```php
+$response = $billmax->get( endpoint: '/accounts/{id}', query: [ 'id' => 999999 ] );
+
+if( $response->status === 404 ) {
+    // account does not exist
+}
+```
+
+The one exception is `401`. If the server rejects the session, the client re-authenticates and retries the request once. If the retry is also rejected, an `AuthException` is thrown.
+
+### Exceptions
+
+Everything the client throws at runtime extends one base class, so a single `catch` covers all of it.
+
+| Exception | Thrown when |
+|-----------|-------------|
+| `BillmaxException` | Abstract base class. Catch this to handle everything below. |
+| `ConfigException` | Settings are missing or invalid when creating the client. |
+| `AuthException` | A login is rejected or fails, or a request is still unauthorized after re-authenticating. |
+| `ApiException` | The request never got an answer (connection refused, timeout, DNS failure), the response was not valid JSON, an invalid HTTP method was used, or a PATCH could not find a `generation` value. |
+| `CacheException` | The token cache could not be read or written. |
+
+All exceptions live in the `Ocolin\Billmax\Exceptions` namespace.
+
+```php
+use Ocolin\Billmax\Exceptions\BillmaxException;
+
+try {
+    $response = $billmax->get( endpoint: '/accounts/{id}', query: [ 'id' => 1234 ] );
+}
+catch( BillmaxException $e ) {
+    // anything the client can throw at runtime
+}
+```
+
+You can also catch a specific class when you want to handle one case differently:
+
+```php
+use Ocolin\Billmax\Exceptions\AuthException;
+use Ocolin\Billmax\Exceptions\BillmaxException;
+
+try {
+    $response = $billmax->get( endpoint: '/accounts' );
+}
+catch( AuthException $e ) {
+    // credentials rejected, send the user back to log in
+}
+catch( BillmaxException $e ) {
+    // everything else
+}
+```
+
+###

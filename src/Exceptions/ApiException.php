@@ -4,6 +4,4 @@ declare( strict_types = 1 );
 
 namespace Ocolin\Billmax\Exceptions;
 
-use Exception;
-
-class ApiException extends Exception {}
+class ApiException extends BillmaxException {}

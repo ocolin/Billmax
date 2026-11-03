@@ -4,7 +4,6 @@ declare( strict_types = 1 );
 
 namespace Ocolin\Billmax;
 
-use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Ocolin\Billmax\Auth\AuthInterface;
 use Ocolin\Billmax\Auth\AuthNone;
@@ -114,7 +113,7 @@ class HTTP
         if( !in_array(
             needle: $method, haystack: self::VALID_METHODS, strict: true )
         ) {
-            throw new ApiException(  message: "Invalid HTTP method: {$method}" );
+            throw new ApiException( message: "Invalid HTTP method: {$method}" );
         }
 
         if( $method === 'PATCH' AND $autoGet === true ) {
@@ -123,6 +122,34 @@ class HTTP
             );
         }
 
+        return $this->sendWithRetry(
+              path: $path,
+            method: $method,
+             query: $query,
+              body: $body,
+        );
+    }
+
+
+
+/* SEND REQUEST AND RETRY IF NEEDED
+----------------------------------------------------------------------------- */
+
+    /**
+     * @param string $path HTTP URI path.
+     * @param string $method HTTP Method.
+     * @param array<string, string|int|float|bool> $query HTTP query parameters.
+     * @param array<string, mixed> $body HTTP POST parameters.
+     * @return Response API client response object.
+     * @throws ApiException|AuthException|CacheException|GuzzleException
+     */
+    private function sendWithRetry(
+              string $path,
+              string $method = 'GET',
+               array $query  = [],
+               array $body   = [],
+    ) : Response
+    {
         $response = $this->send(
               path: $path,
             method: $method,
@@ -161,7 +188,7 @@ class HTTP
      */
     private function fetchGeneration( string $path, array $query ) : string
     {
-        $get = $this->send( path: $path, query: $query );
+        $get = $this->sendWithRetry( path: $path, method: 'GET', query: $query  );
 
         if( !self::hasValidGeneration( body: $get->body )) {
             throw new ApiException( message: 'No generation found.' );
@@ -184,7 +211,7 @@ class HTTP
      * @param array<string, string|int|float|bool> $query HTTP query parameters.
      * @param array<string, mixed> $body HTTP POST body.
      * @return Response API client response object.
-     * @throws ApiException|CacheException|AuthException|GuzzleException
+     * @throws ApiException|CacheException|AuthException
      */
     private function send(
         string $path,
@@ -193,23 +220,34 @@ class HTTP
          array $body   = [],
     ) : Response
     {
-        $path = self::buildPath( path: $path, query: $query );
+        $path = self::buildPath(path: $path, query: $query);
 
-        return self::buildResponse( response: $this->client->request(
-             method: $method,
-                uri: $path,
-            // @phpstan-ignore argument.type
-            options: array_merge(
-                [ 'verify'  => false, 'timeout' => 30 ],
-                $this->config->options,
-                [
-                    'query'   => $query,
-                    'json'    => in_array( $method, ['POST', 'PATCH'] )
-                        ? $body : null,
-                    'headers' => $this->auth->getHeaders(),
-                ]
-            )
-        ));
+        try {
+            $response = $this->client->request(
+                 method: $method,
+                    uri: $path,
+                // @phpstan-ignore argument.type
+                options: array_merge(
+                    ['verify' => false, 'timeout' => 30],
+                    $this->config->options,
+                    [
+                        'query' => $query,
+                        'json' => in_array($method, ['POST', 'PATCH'])
+                            ? $body : null,
+                        'headers' => $this->auth->getHeaders(),
+                    ],
+                    ['http_errors' => false]
+                )
+            );
+        }
+        catch( GuzzleException $e ) {
+            throw new ApiException(
+                 message: $e->getMessage() . " API: {$method} {$path} failed.",
+                previous: $e
+            );
+        }
+
+        return self::buildResponse( response: $response );
     }
 
 
@@ -260,20 +298,30 @@ class HTTP
             }
         }
 
-        return self::buildResponse( response: $this->client->request(
-             method: 'POST',
+        try {
+            $request = $this->client->request(
+                method: 'POST',
                 uri: 'files',
-            // @phpstan-ignore argument.type
-            options:
-             array_merge(
-                 [ 'verify' => false, 'timeout' => 20 ],
-                 $this->config->options,
-                 [
-                     'multipart' => $multi,
-                     'headers'   => $this->auth->getHeaders(),
-                ]
-             )
-        ));
+                // @phpstan-ignore argument.type
+                options: array_merge(
+                    ['verify' => false, 'timeout' => 20],
+                    $this->config->options,
+                    [
+                        'multipart' => $multi,
+                        'headers' => $this->auth->getHeaders(),
+                    ],
+                    ['http_errors' => false]
+                )
+            );
+        }
+        catch( GuzzleException $e ) {
+                throw new ApiException(
+                     message: $e->getMessage() . " API: POST {$entityId} failed.",
+                    previous: $e
+                );
+            }
+
+        return self::buildResponse( response: $request );
     }
 
 
