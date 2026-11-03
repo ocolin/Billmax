@@ -45,7 +45,6 @@ abstract class AuthSession implements AuthInterface
      * @param string $identifier Which identifier to use for login username.
      * @return string Session ID token.
      * @throws AuthException
-     * @throws GuzzleException
      */
     public function login( string $identifier ) : string
     {
@@ -77,7 +76,8 @@ abstract class AuthSession implements AuthInterface
         }
         catch( GuzzleException $e ) {
             throw new AuthException(
-                message: "AUTH: Login request failed. " . $e->getMessage()
+                message: "AUTH: Login request failed. " . $e->getMessage(),
+                previous: $e,
             );
         }
 
