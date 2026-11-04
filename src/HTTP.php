@@ -99,7 +99,7 @@ class HTTP
      * @param array<string, mixed>|object $body HTTP POST parameters.
      * @param bool $autoGet Automatically get generation for PATCH method.
      * @return Response API client response object.
-     * @throws ApiException|AuthException|CacheException|GuzzleException
+     * @throws ApiException|AuthException|CacheException
      */
     public function request(
               string $path,
@@ -143,7 +143,7 @@ class HTTP
      * @param array<string, string|int|float|bool> $query HTTP query parameters.
      * @param array<string, mixed> $body HTTP POST parameters.
      * @return Response API client response object.
-     * @throws ApiException|AuthException|CacheException|GuzzleException
+     * @throws ApiException|AuthException|CacheException
      */
     private function sendWithRetry(
               string $path,
@@ -186,7 +186,7 @@ class HTTP
      * @param string $path URI path on API server.
      * @param array<string, string|int|float|bool> $query HTTP query parameters.
      * @return string Object generation value.
-     * @throws ApiException|AuthException|CacheException|GuzzleException
+     * @throws ApiException|AuthException|CacheException
      */
     private function fetchGeneration( string $path, array $query ) : string
     {
@@ -271,7 +271,7 @@ class HTTP
      * @param array<int, array{path: string, class: string, description: string}> $filePaths
      *  List of files in format [ path, fileClass, description.
      * @return Response Client HTTP response object/
-     * @throws ApiException|AuthException|CacheException|GuzzleException
+     * @throws ApiException|AuthException|CacheException
      */
     public function upload(
         string $entity,
@@ -324,13 +324,13 @@ class HTTP
         }
         catch ( ConnectException $e ) {
             throw new ConnectionException(
-                message: $e->getMessage() . " API: POST {$entityId} failed.",
+                message: $e->getMessage() . " API: POST files {$entityId} failed.",
                 previous: $e
             );
         }
         catch( GuzzleException $e ) {
                 throw new ApiException(
-                     message: $e->getMessage() . " API: POST {$entityId} failed.",
+                     message: $e->getMessage() . " API: POST files {$entityId} failed.",
                     previous: $e
                 );
             }

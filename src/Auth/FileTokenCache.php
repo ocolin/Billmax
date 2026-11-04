@@ -13,6 +13,10 @@ class FileTokenCache implements TokenInterface
 /* CONSTRUCTOR
 ----------------------------------------------------------------------------- */
 
+    /**
+     * @param string $hash Hash for token file name.
+     * @throws CacheException
+     */
     public function __construct( string $hash )
     {
         $this->path = sys_get_temp_dir() .
@@ -30,11 +34,11 @@ class FileTokenCache implements TokenInterface
     }
 
 
-/*
+/* GET TOKEN
 ----------------------------------------------------------------------------- */
 
     /**
-     * @return string|null
+     * @return string|null Token string.
      * @throws CacheException
      */
     public function get(): ?string
@@ -52,11 +56,11 @@ class FileTokenCache implements TokenInterface
     }
 
 
-/*
+/* SET TOKEN
 ----------------------------------------------------------------------------- */
 
     /**
-     * @param string $token
+     * @param string $token Token to store.
      * @return void
      * @throws CacheException
      */
@@ -85,7 +89,7 @@ class FileTokenCache implements TokenInterface
     }
 
 
-/*
+/* CLEAR TOKEN
 ----------------------------------------------------------------------------- */
 
     /**

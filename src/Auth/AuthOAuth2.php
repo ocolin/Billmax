@@ -10,15 +10,23 @@ use Ocolin\Billmax\Config;
 class AuthOAuth2 implements AuthInterface
 {
 
-/*
+/* CONSTRUCTOR
 ----------------------------------------------------------------------------- */
 
+    /**
+     * @param Config $config
+     */
     public function __construct( protected Config $config ) {}
 
 
-/*
+
+/* GET HTTP HEADERS
 ----------------------------------------------------------------------------- */
 
+    /**
+     * @return array<string, int|float|string> List of headers.
+     * @throws AuthException
+     */
     public function getHeaders() : array
     {
         $temp = $this->config;
@@ -26,9 +34,14 @@ class AuthOAuth2 implements AuthInterface
     }
 
 
-/*
+
+/* LOGIN
 ----------------------------------------------------------------------------- */
 
+    /**
+     * @return never
+     * @throws AuthException
+     */
     public function login() : never
     {
         throw new AuthException(
@@ -38,9 +51,13 @@ class AuthOAuth2 implements AuthInterface
 
 
 
-/*
+/* RE-AUTHENTICATE
 ----------------------------------------------------------------------------- */
 
+    /**
+     * @return never
+     * @throws AuthException
+     */
     public function reAuthenticate() : never
     {
         throw new AuthException(

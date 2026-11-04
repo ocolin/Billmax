@@ -4,11 +4,12 @@ declare( strict_types = 1 );
 
 namespace Ocolin\Billmax\Auth;
 
-use GuzzleHttp\Exception\GuzzleException;
 use Ocolin\Billmax\Config;
+use Ocolin\Billmax\Exceptions\ApiException;
 use Ocolin\Billmax\Exceptions\AuthException;
 use Ocolin\Billmax\Exceptions\CacheException;
 use GuzzleHttp\ClientInterface;
+use Ocolin\Billmax\Exceptions\ConnectionException;
 
 class AuthUserPass extends AuthSession
 {
@@ -17,6 +18,12 @@ class AuthUserPass extends AuthSession
 /* CONSTRUCTOR
 ----------------------------------------------------------------------------- */
 
+    /**
+     * @param Config $config API configuration object.
+     * @param TokenInterface|null $cache Caching interface.
+     * @param ClientInterface|null $client API client interface.
+     * @throws CacheException
+     */
     public function __construct(
                   Config $config,
          ?TokenInterface $cache  = null,
@@ -36,8 +43,7 @@ class AuthUserPass extends AuthSession
 
     /**
      * @return array<string, string> Array of auth headers.
-     * @throws GuzzleException
-     * @throws AuthException
+     * @throws AuthException|ConnectionException|ApiException
      * @throws CacheException
      */
     public function getHeaders() : array
@@ -68,9 +74,7 @@ class AuthUserPass extends AuthSession
 
     /**
      * @return array<string, string> Array of Auth headers.
-     * @throws AuthException
-     * @throws CacheException
-     * @throws GuzzleException
+     * @throws AuthException|ConnectionException|ApiException|CacheException
      */
     public function reAuthenticate(): array
     {

@@ -280,7 +280,7 @@ The api ksy is part of your billmax remove application and was generated when yo
 
 ## Uploading
 
-Because uploading files works much different from the rest of endpoints, a specific function as been created to handle file uploading.
+Because uploading files works much different from the rest of endpoints, a specific function as been created to handle file uploading. Note: Uploading will not re-try on failed authentication.
 
 ### Upload arguments
 
