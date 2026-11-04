@@ -5,11 +5,11 @@ declare( strict_types = 1 );
 namespace Ocolin\Billmax;
 
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
 use Ocolin\Billmax\Auth\TokenInterface;
 use Ocolin\Billmax\Exceptions\AuthException;
 use Ocolin\Billmax\Exceptions\CacheException;
 use Ocolin\Billmax\Exceptions\ApiException;
+use Ocolin\Billmax\Exceptions\ConnectionException;
 
 class Billmax
 {
@@ -58,7 +58,7 @@ class Billmax
      * @param string $endpoint API end point URI.
      * @param array<string, string|int|float|bool>|object $query GET and Path parameters.
      * @return Response Api client response object.
-     * @throws AuthException|CacheException|ApiException|GuzzleException
+     * @throws AuthException|CacheException|ApiException|ConnectionException
      */
     public function get( string $endpoint, array|object $query = [] ) : Response
     {
@@ -74,7 +74,7 @@ class Billmax
      * @param string $endpoint API end point URI.
      * @param array<string, string|int|float|bool>|object $query GET and Path parameters.
      * @return Response Api client response object.
-     * @throws ApiException|AuthException|CacheException|GuzzleException
+     * @throws ApiException|AuthException|CacheException|ConnectionException
      */
     public function delete( string $endpoint, array|object $query = [] ) : Response
     {
@@ -93,7 +93,7 @@ class Billmax
      * @param array<string, string|int|float|bool>|object $query GET and Path parameters.
      * @param array<string, mixed>|object $body HTTP request POST body.
      * @return Response Api client response object.
-     * @throws ApiException|AuthException|CacheException|GuzzleException
+     * @throws ApiException|AuthException|CacheException|ConnectionException
      */
     public function post(
               string $endpoint,
@@ -117,7 +117,7 @@ class Billmax
      * @param array<string, mixed>|object $body HTTP request POST body.
      * @param bool $autoGet Update generation value before using PATCH.
      * @return Response Api client response object.
-     * @throws ApiException|AuthException|CacheException|GuzzleException
+     * @throws ApiException|AuthException|CacheException|ConnectionException
      */
     public function patch(
               string $endpoint,
@@ -147,7 +147,6 @@ class Billmax
      * @param array<string, mixed>|object $body HTTP request POST body.
      * @param bool $autoGet Update generation value before using PATCH.
      * @return Response Api client response object.
-     * @throws ApiException|AuthException|CacheException|GuzzleException
      */
     public function request(
               string $endpoint,
@@ -176,7 +175,7 @@ class Billmax
      * @param array<int, array{path: string, class: string, description: string}> $filePaths
      *  List of files in format [ path, fileClass, description.
      * @return Response Client HTTP response object.
-     * @throws ApiException|AuthException|CacheException|GuzzleException
+     * @throws ApiException|AuthException|CacheException|ConnectionException
      */
     public function upload(
         string $entity,
