@@ -20,16 +20,15 @@ class FileTokenCache implements TokenInterface
      */
     public function __construct( string $hash, ?string $tokenDir = null )
     {
+        // Using ?: instead of ?? to eliminate '' and 0 as well as null.
+        $dir = rtrim( string: $tokenDir ?: sys_get_temp_dir(), characters: '/\\' );
+
         // Absolute path check
-        if( !self::isAbsolutePath( path: $tokenDir )) {
+        if( !self::isAbsolutePath( path: $dir )) {
             throw new CacheException(
                 message: "Token directory must be an absolute path: {$tokenDir}."
             );
         }
-
-        // Using ?: instead of ?? to eliminate '' and 0 as well as null.
-        $dir = rtrim( string: $tokenDir ?: sys_get_temp_dir(), characters: '/\\' );
-
 
         // Directory exists check
         if( !is_dir( filename: $dir )) {
