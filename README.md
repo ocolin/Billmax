@@ -57,18 +57,19 @@ composer require ocolin/billmax
 
 The client can be configured by either environment variables, constructor arguments, or a combination of both, Here is a list of the settings needed for configuration.
 
-|Environment|Constructor| Description                    |
-|-----------|-----------|--------------------------------|
-|BILLMAX_API_KEY|$apiKey| API Key to access server       |
-|BILLMAX_API_HOST|$host| Hostname and URI of API server |
-|BILLMAX_API_AUTH|$auth| Authentication mode            |
-|BILLMAX_API_USERNAME|$username| Username for USERPASS mode     |
-|BILLMAX_API_PASSWORD|$password| Password for USERPASS mode     |
-|BILLMAX_API_OAUTH2_CLIENT_ID|$clientId| Client ID for OAuth2 mode      |
-|BILLMAX_API_OAUTH2_CLIENT_SECRET|$clientSecret| Client secret for OAuth2 mode  |
-|BILLMAX_API_APP_ID|$appId| App ID found in Billmax|
-|BILLMAX_API_DEVICE_ID|$deviceId| Optional Device ID|
-|BILLMAX_API_APP_VERSION|$appVersion| Optional app version|
+|Environment| Constructor  | Description                                                                                                            |
+|-----------|--------------|------------------------------------------------------------------------------------------------------------------------|
+|BILLMAX_API_KEY| $apiKey      | API Key to access server                                                                                               |
+|BILLMAX_API_HOST| $host        | Hostname and URI of API server                                                                                         |
+|BILLMAX_API_AUTH| $auth        | Authentication mode                                                                                                    |
+|BILLMAX_API_USERNAME| $username    | Username for USERPASS mode                                                                                             |
+|BILLMAX_API_PASSWORD| $password    | Password for USERPASS mode                                                                                             |
+|BILLMAX_API_OAUTH2_CLIENT_ID| $clientId    | Client ID for OAuth2 mode                                                                                              |
+|BILLMAX_API_OAUTH2_CLIENT_SECRET| $clientSecret | Client secret for OAuth2 mode                                                                                          |
+|BILLMAX_API_APP_ID| $appId       | App ID found in Billmax                                                                                                |
+|BILLMAX_API_DEVICE_ID| $deviceId    | Optional Device ID                                                                                                     |
+|BILLMAX_API_APP_VERSION| $appVersion  | Optional app version                                                                                                   |
+|BILLMAX_API_TOKEN_DIR| $tokenDir    | Optional auth token directory. Path must be absolute.Recomment using storage_path() for Laravel and __DIR__ elsewhere. |
 
 ### Authentication mode.
 

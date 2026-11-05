@@ -38,7 +38,8 @@ abstract class AuthSession implements AuthInterface
         ?GuzzleClientInterface $client = null
     ) {
         $this->client = $client ?? new GuzzleClient();
-        $this->tokenManager = $tokenManager ?? new FileTokenCache( hash: $hash );
+        $this->tokenManager = $tokenManager ??
+            new FileTokenCache( hash: $hash, tokenDir: $this->config->tokenDir );
     }
 
 
@@ -63,7 +64,7 @@ abstract class AuthSession implements AuthInterface
                 uri: $host,
                 // @phpstan-ignore argument.type
                 options: array_merge(
-                    ['verify' => false, 'timeout' => 30],
+                    [ 'verify' => false, 'timeout' => 30 ],
                     $this->config->options ?? [],
                     [
                         'headers' => array_filter([
