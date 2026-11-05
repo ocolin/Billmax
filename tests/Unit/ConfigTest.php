@@ -273,11 +273,12 @@ class ConfigTest extends TestCase
     {
         // backup current env values
         $this->backup = [
-            'BILLMAX_API_HOST'     => $_ENV['BILLMAX_API_HOST']     ?? null,
-            'BILLMAX_API_AUTH'     => $_ENV['BILLMAX_API_AUTH']     ?? null,
-            'BILLMAX_API_KEY'      => $_ENV['BILLMAX_API_KEY']      ?? null,
-            'BILLMAX_API_USERNAME' => $_ENV['BILLMAX_API_USERNAME'] ?? null,
-            'BILLMAX_API_PASSWORD' => $_ENV['BILLMAX_API_PASSWORD'] ?? null,
+            'BILLMAX_API_HOST'      => $_ENV['BILLMAX_API_HOST']      ?? null,
+            'BILLMAX_API_AUTH'      => $_ENV['BILLMAX_API_AUTH']      ?? null,
+            'BILLMAX_API_KEY'       => $_ENV['BILLMAX_API_KEY']       ?? null,
+            'BILLMAX_API_USERNAME'  => $_ENV['BILLMAX_API_USERNAME']  ?? null,
+            'BILLMAX_API_PASSWORD'  => $_ENV['BILLMAX_API_PASSWORD']  ?? null,
+            'BILLMAX_API_TOKEN_DIR' => $_ENV['BILLMAX_API_TOKEN_DIR'] ?? null,
             'BILLMAX_API_OAUTH2_CLIENT_ID'
                 => $_ENV['BILLMAX_API_OAUTH2_CLIENT_ID'] ?? null,
             'BILLMAX_API_OAUTH2_CLIENT_SECRET'

@@ -60,6 +60,11 @@ readonly class Config
     public ?string $appVersion;
 
     /**
+     * @var string|null Optional directory to store auth token.
+     */
+    public ?string $tokenDir;
+
+    /**
      * @var array<string, string|int|float|bool> List of Guzzle options.
      */
     public array $options;
@@ -76,6 +81,10 @@ readonly class Config
      * @param ?string $password Password to log in with.
      * @param ?string $clientId Oauth2 Client ID.
      * @param ?string $clientSecret Oauth 2 Client secret.
+     * @param ?string $appId
+     * @param ?string $deviceId
+     * @param ?string $appVersion
+     * @param ?string $tokenDir Optional directory to store auth token.
      * @param array<string, string|int|float|bool> $options
      * @throws ConfigException
      */
@@ -90,6 +99,7 @@ readonly class Config
         ?string $appId        = null,
         ?string $deviceId     = null,
         ?string $appVersion   = null,
+        ?string $tokenDir     = null,
           array $options      = []
     ) {
         $this->host       = $host       ?? ENV::getStringNull( name: 'BILLMAX_API_HOST' );
@@ -100,6 +110,7 @@ readonly class Config
         $this->appId      = $appId      ?? ENV::getStringNull( name: 'BILLMAX_API_APP_ID' ) ?? 'billmax-techapp';
         $this->deviceId   = $deviceId   ?? ENV::getStringNull( name: 'BILLMAX_API_DEVICE_ID' );
         $this->appVersion = $appVersion ?? ENV::getStringNull( name: 'BILLMAX_API_APP_VERSION' );
+        $this->tokenDir   = $tokenDir   ?? ENV::getStringNull( name: 'BILLMAX_API_TOKEN_DIR' );
 
         $this->options = $options;
 
